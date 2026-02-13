@@ -1,0 +1,665 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Investment Calculator</title>
+  <style>
+    :root{
+      --bg:#0b1220;
+      --panel:#111a2e;
+      --panel2:#0f1729;
+      --card:#0f1930;
+      --text:#e9eefc;
+      --muted:#a9b3cf;
+      --border:rgba(255,255,255,.10);
+      --border2:rgba(255,255,255,.14);
+      --accent:#6aa7ff;
+      --accent2:#79ffd7;
+      --danger:#ff6a6a;
+      --shadow: 0 18px 60px rgba(0,0,0,.35);
+      --r:16px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:var(--sans);
+      color:var(--text);
+      background:
+        radial-gradient(1200px 700px at 20% 10%, rgba(106,167,255,.22), transparent 55%),
+        radial-gradient(900px 600px at 80% 20%, rgba(121,255,215,.16), transparent 55%),
+        radial-gradient(1200px 900px at 50% 100%, rgba(156,120,255,.12), transparent 60%),
+        var(--bg);
+      padding:24px;
+    }
+    .wrap{max-width:1180px;margin:0 auto}
+    header{
+      display:flex;gap:14px;align-items:center;justify-content:space-between;
+      margin-bottom:18px;
+    }
+    .title{
+      display:flex;flex-direction:column;gap:2px;
+    }
+    h1{margin:0;font-size:20px;letter-spacing:.2px}
+    .sub{margin:0;color:var(--muted);font-size:13px;line-height:1.35}
+    .badge{
+      padding:6px 10px;border-radius:999px;
+      background:linear-gradient(90deg, rgba(106,167,255,.18), rgba(121,255,215,.12));
+      border:1px solid var(--border);
+      color:var(--muted);
+      font-size:12px;
+      display:flex;gap:8px;align-items:center;
+      white-space:nowrap;
+    }
+    .grid{
+      display:grid;
+      grid-template-columns: 420px 1fr;
+      gap:18px;
+      align-items:start;
+    }
+    @media (max-width: 980px){
+      .grid{grid-template-columns:1fr}
+    }
+
+    .panel{
+      background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      border:1px solid var(--border);
+      border-radius:var(--r);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .panel .hd{
+      padding:14px 14px 12px 14px;
+      display:flex;align-items:center;justify-content:space-between;
+      border-bottom:1px solid var(--border);
+      background:rgba(255,255,255,.02);
+    }
+    .panel .hd .k{
+      display:flex;flex-direction:column;gap:2px;
+    }
+    .panel .hd .k .t{font-size:14px;font-weight:650}
+    .panel .hd .k .d{font-size:12px;color:var(--muted)}
+    .panel .bd{padding:14px}
+
+    .form{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:12px;
+    }
+    .field{display:flex;flex-direction:column;gap:6px}
+    .field.full{grid-column:1 / -1}
+    label{font-size:12px;color:var(--muted)}
+    input, select{
+      width:100%;
+      padding:10px 11px;
+      border-radius:12px;
+      border:1px solid var(--border);
+      background:rgba(10,16,30,.55);
+      color:var(--text);
+      outline:none;
+      transition: border-color .15s ease, box-shadow .15s ease, transform .05s ease;
+      font-size:13px;
+    }
+    input:focus, select:focus{
+      border-color:rgba(106,167,255,.65);
+      box-shadow:0 0 0 4px rgba(106,167,255,.16);
+    }
+    input:active{transform:translateY(0.5px)}
+    .hint{
+      font-size:11px;color:rgba(169,179,207,.85);
+      line-height:1.35;
+    }
+    .actions{
+      display:flex;gap:10px;flex-wrap:wrap;align-items:center;
+      margin-top:12px;
+    }
+    .btn{
+      cursor:pointer;
+      border-radius:12px;
+      border:1px solid var(--border2);
+      padding:10px 12px;
+      font-weight:650;
+      font-size:13px;
+      color:var(--text);
+      background:rgba(255,255,255,.04);
+      transition: transform .05s ease, box-shadow .15s ease, border-color .15s ease, background .15s ease;
+      user-select:none;
+    }
+    .btn.primary{
+      background:linear-gradient(90deg, rgba(106,167,255,.28), rgba(121,255,215,.18));
+      border-color:rgba(106,167,255,.40);
+    }
+    .btn:hover{border-color:rgba(255,255,255,.22)}
+    .btn.primary:hover{border-color:rgba(106,167,255,.60)}
+    .btn:active{transform:translateY(0.5px)}
+    .note{
+      margin-left:auto;
+      font-size:11px;color:var(--muted);
+      display:flex;gap:8px;align-items:center;
+    }
+    .dot{
+      width:8px;height:8px;border-radius:99px;background:var(--accent);
+      box-shadow:0 0 0 4px rgba(106,167,255,.14);
+    }
+
+    .kpis{
+      display:grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap:12px;
+    }
+    @media (max-width: 980px){
+      .kpis{grid-template-columns: repeat(2, 1fr)}
+    }
+    .kpi{
+      padding:12px;
+      border-radius:14px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.02);
+    }
+    .kpi .l{font-size:11px;color:var(--muted)}
+    .kpi .v{margin-top:6px;font-size:17px;font-weight:750;letter-spacing:.2px}
+    .kpi .s{margin-top:4px;font-size:11px;color:rgba(169,179,207,.9)}
+    .kpi .mono{font-family:var(--mono)}
+    .chartWrap{
+      margin-top:12px;
+      padding:12px;
+      border-radius:14px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.02);
+    }
+    .chartTop{
+      display:flex;gap:10px;align-items:center;justify-content:space-between;margin-bottom:10px;
+    }
+    .legend{display:flex;gap:10px;align-items:center;color:var(--muted);font-size:12px}
+    .key{display:flex;gap:6px;align-items:center}
+    .sw{width:10px;height:10px;border-radius:3px;background:var(--accent)}
+    .sw.b{background:var(--accent2)}
+    canvas{width:100%;height:250px;display:block}
+    .tableWrap{
+      margin-top:12px;
+      border-radius:14px;
+      border:1px solid var(--border);
+      overflow:hidden;
+      background:rgba(255,255,255,.02);
+    }
+    table{
+      width:100%;
+      border-collapse:collapse;
+      font-size:12px;
+    }
+    thead th{
+      text-align:left;
+      padding:10px 10px;
+      color:var(--muted);
+      font-weight:650;
+      border-bottom:1px solid var(--border);
+      background:rgba(255,255,255,.02);
+      position:sticky;top:0;
+    }
+    tbody td{
+      padding:9px 10px;
+      border-bottom:1px solid rgba(255,255,255,.06);
+      color:rgba(233,238,252,.95);
+    }
+    tbody tr:hover{background:rgba(255,255,255,.03)}
+    .right{text-align:right}
+    .small{font-size:11px;color:var(--muted)}
+    .warn{
+      margin-top:10px;
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid rgba(255,106,106,.25);
+      background:rgba(255,106,106,.08);
+      color:rgba(255,220,220,.95);
+      font-size:12px;
+      display:none;
+    }
+    .footerHelp{
+      margin-top:10px;
+      color:rgba(169,179,207,.85);
+      font-size:11px;
+      line-height:1.35;
+    }
+    .pill{
+      font-family:var(--mono);
+      padding:2px 6px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.03);
+      color:rgba(233,238,252,.9);
+      font-size:11px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="title">
+        <h1>Investment Calculator</h1>
+        <p class="sub">Compound growth with contributions, contribution growth, inflation, and tax on gains.</p>
+      </div>
+      <div class="badge" title="Everything runs locally in your browser. No uploads. No tracking.">
+        <span class="dot"></span>
+        <span>Standalone • Offline-ready</span>
+      </div>
+    </header>
+
+    <div class="grid">
+      <!-- LEFT: INPUTS -->
+      <section class="panel">
+        <div class="hd">
+          <div class="k">
+            <div class="t">Inputs</div>
+            <div class="d">Tune assumptions, then click “Calculate”.</div>
+          </div>
+          <div class="small">Defaults are conservative</div>
+        </div>
+        <div class="bd">
+          <div class="form" id="form">
+            <div class="field">
+              <label for="initial">Initial investment ($)</label>
+              <input id="initial" type="number" min="0" step="100" value="5000" />
+              <div class="hint">One-time starting amount.</div>
+            </div>
+            <div class="field">
+              <label for="monthly">Monthly contribution ($)</label>
+              <input id="monthly" type="number" min="0" step="25" value="300" />
+              <div class="hint">Added each month.</div>
+            </div>
+
+            <div class="field">
+              <label for="contribGrow">Contribution growth (% / yr)</label>
+              <input id="contribGrow" type="number" min="0" step="0.1" value="2.0" />
+              <div class="hint">Auto-increase contributions yearly.</div>
+            </div>
+            <div class="field">
+              <label for="years">Time horizon (years)</label>
+              <input id="years" type="number" min="1" max="50" step="1" value="20" />
+              <div class="hint">1–50 years.</div>
+            </div>
+
+            <div class="field">
+              <label for="returnRate">Annual return (%)</label>
+              <input id="returnRate" type="number" step="0.1" value="7.0" />
+              <div class="hint">Nominal (before inflation).</div>
+            </div>
+            <div class="field">
+              <label for="compound">Compounding</label>
+              <select id="compound">
+                <option value="12" selected>Monthly</option>
+                <option value="4">Quarterly</option>
+                <option value="1">Annually</option>
+              </select>
+              <div class="hint">How often interest is applied.</div>
+            </div>
+
+            <div class="field">
+              <label for="inflation">Inflation (% / yr)</label>
+              <input id="inflation" type="number" step="0.1" value="2.5" />
+              <div class="hint">Used for real value estimate.</div>
+            </div>
+            <div class="field">
+              <label for="tax">Tax on gains (%)</label>
+              <input id="tax" type="number" min="0" max="60" step="0.1" value="15.0" />
+              <div class="hint">Simplified end-of-horizon tax.</div>
+            </div>
+
+            <div class="field full">
+              <div class="actions">
+                <button class="btn primary" id="calcBtn" type="button">Calculate</button>
+                <button class="btn" id="resetBtn" type="button">Reset</button>
+                <button class="btn" id="exportBtn" type="button">Export table (CSV)</button>
+                <div class="note"><span class="pill">Tip</span> Try 30 yrs + 8% return</div>
+              </div>
+              <div class="warn" id="warn"></div>
+              <div class="footerHelp">
+                This tool uses a month-by-month simulation. Taxes are applied once at the end on <span class="pill">max(0, final - total contributed)</span>.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- RIGHT: OUTPUTS -->
+      <section class="panel">
+        <div class="hd">
+          <div class="k">
+            <div class="t">Outputs</div>
+            <div class="d">At-a-glance metrics, growth chart, and yearly breakdown.</div>
+          </div>
+          <div class="small" id="stamp">—</div>
+        </div>
+        <div class="bd">
+          <div class="kpis">
+            <div class="kpi">
+              <div class="l">Final portfolio (nominal)</div>
+              <div class="v" id="kpiFinal">$—</div>
+              <div class="s">After end-of-horizon taxes</div>
+            </div>
+            <div class="kpi">
+              <div class="l">Total invested</div>
+              <div class="v" id="kpiInvested">$—</div>
+              <div class="s">Initial + all contributions</div>
+            </div>
+            <div class="kpi">
+              <div class="l">Interest earned</div>
+              <div class="v" id="kpiInterest">$—</div>
+              <div class="s">Before taxes</div>
+            </div>
+            <div class="kpi">
+              <div class="l">Real value (today’s $)</div>
+              <div class="v" id="kpiReal">$—</div>
+              <div class="s">Inflation-adjusted estimate</div>
+            </div>
+          </div>
+
+          <div class="chartWrap">
+            <div class="chartTop">
+              <div class="legend">
+                <div class="key"><span class="sw"></span> Total portfolio</div>
+                <div class="key"><span class="sw b"></span> Total contributed</div>
+              </div>
+              <div class="small" id="chartNote">—</div>
+            </div>
+            <canvas id="chart" width="900" height="300" aria-label="Growth chart" role="img"></canvas>
+          </div>
+
+          <div class="tableWrap" style="max-height:340px; overflow:auto;">
+            <table id="table">
+              <thead>
+                <tr>
+                  <th>Year</th>
+                  <th class="right">End balance</th>
+                  <th class="right">Total contributed</th>
+                  <th class="right">Interest earned</th>
+                </tr>
+              </thead>
+              <tbody id="tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+<script>
+(function(){
+  const $ = (id)=>document.getElementById(id);
+
+  const el = {
+    initial:$('initial'),
+    monthly:$('monthly'),
+    contribGrow:$('contribGrow'),
+    years:$('years'),
+    returnRate:$('returnRate'),
+    compound:$('compound'),
+    inflation:$('inflation'),
+    tax:$('tax'),
+    calcBtn:$('calcBtn'),
+    resetBtn:$('resetBtn'),
+    exportBtn:$('exportBtn'),
+    warn:$('warn'),
+    stamp:$('stamp'),
+    chart:$('chart'),
+    chartNote:$('chartNote'),
+    kpiFinal:$('kpiFinal'),
+    kpiInvested:$('kpiInvested'),
+    kpiInterest:$('kpiInterest'),
+    kpiReal:$('kpiReal'),
+    tbody:$('tbody')
+  };
+
+  function fmtMoney(n){
+    if(!isFinite(n)) return '—';
+    return n.toLocaleString(undefined,{style:'currency',currency:'USD',maximumFractionDigits:0});
+  }
+  function fmtPct(n){ return (n).toFixed(2) + '%'; }
+
+  function showWarn(msg){
+    el.warn.style.display = msg ? 'block' : 'none';
+    el.warn.textContent = msg || '';
+  }
+
+  // --- Core simulation (month-by-month) ---
+  function simulate(params){
+    const months = params.years * 12;
+    const rAnnual = params.annualReturn / 100;
+    const inflAnnual = params.inflation / 100;
+    const contribGrowAnnual = params.contribGrow / 100;
+
+    const cpy = params.compoundsPerYear;
+    const pRate = Math.pow(1 + rAnnual, 1 / cpy) - 1;
+    const monthsPerPeriod = 12 / cpy;
+
+    let balance = params.initial;
+    let contributed = params.initial;
+
+    let seriesTotal = [];
+    let seriesContrib = [];
+
+    let yearly = [];
+    let monthlyContribution = params.monthly;
+
+    for(let m=1; m<=months; m++){
+      balance += monthlyContribution;
+      contributed += monthlyContribution;
+
+      if(m % monthsPerPeriod === 0){
+        balance *= (1 + pRate);
+      }
+
+      seriesTotal.push(balance);
+      seriesContrib.push(contributed);
+
+      if(m % 12 === 0){
+        const year = m/12;
+        const interestEarned = Math.max(0, balance - contributed);
+        yearly.push({ year, endBalance: balance, contributed, interestEarned });
+
+        monthlyContribution *= (1 + contribGrowAnnual);
+      }
+    }
+
+    const gains = Math.max(0, balance - contributed);
+    const taxPaid = gains * (params.tax / 100);
+    const afterTax = balance - taxPaid;
+    const real = afterTax / Math.pow(1 + inflAnnual, params.years);
+
+    return { afterTax, beforeTax: balance, contributed, gains, taxPaid, real, yearly, seriesTotal, seriesContrib };
+  }
+
+  // --- Canvas chart (no external libs) ---
+  function formatCompact(v){
+    if(!isFinite(v)) return '—';
+    const abs = Math.abs(v);
+    if(abs >= 1e9) return (v/1e9).toFixed(1)+'B';
+    if(abs >= 1e6) return (v/1e6).toFixed(1)+'M';
+    if(abs >= 1e3) return (v/1e3).toFixed(0)+'K';
+    return Math.round(v).toString();
+  }
+
+  function drawChart(canvas, total, contrib){
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+
+    ctx.clearRect(0,0,W,H);
+
+    const padL=54, padR=16, padT=16, padB=32;
+    const iw = W - padL - padR;
+    const ih = H - padT - padB;
+
+    const maxY = Math.max(...total, ...contrib, 1);
+    const n = total.length;
+
+    const x = (i)=> padL + (i/(n-1))*iw;
+    const y = (v)=> padT + (1 - (v/maxY))*ih;
+
+    // grid
+    ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+    ctx.lineWidth = 1;
+    const gridLines = 4;
+    for(let g=0; g<=gridLines; g++){
+      const yy = padT + (g/gridLines)*ih;
+      ctx.beginPath();
+      ctx.moveTo(padL, yy);
+      ctx.lineTo(padL+iw, yy);
+      ctx.stroke();
+    }
+
+    // y labels
+    ctx.fillStyle = 'rgba(169,179,207,0.9)';
+    ctx.font = '12px ui-monospace, Menlo, Consolas, monospace';
+    ctx.textAlign='right';
+    ctx.textBaseline='middle';
+    for(let g=0; g<=gridLines; g++){
+      const yy = padT + (g/gridLines)*ih;
+      const val = (1 - g/gridLines)*maxY;
+      ctx.fillText(formatCompact(val), padL-10, yy);
+    }
+
+    // x labels (years)
+    ctx.textAlign='center';
+    ctx.textBaseline='top';
+    ctx.font = '11px ui-monospace, Menlo, Consolas, monospace';
+    for(let m=0; m<n; m+=12){
+      ctx.fillText('Y' + (Math.floor(m/12)+1), x(m), padT+ih+8);
+    }
+
+    function line(series, stroke, fill){
+      // fill
+      ctx.beginPath();
+      for(let i=0;i<n;i++){
+        const xx=x(i), yy=y(series[i]);
+        if(i===0) ctx.moveTo(xx,yy);
+        else ctx.lineTo(xx,yy);
+      }
+      ctx.lineTo(padL+iw, padT+ih);
+      ctx.lineTo(padL, padT+ih);
+      ctx.closePath();
+      ctx.fillStyle = fill;
+      ctx.fill();
+
+      // stroke
+      ctx.beginPath();
+      for(let i=0;i<n;i++){
+        const xx=x(i), yy=y(series[i]);
+        if(i===0) ctx.moveTo(xx,yy);
+        else ctx.lineTo(xx,yy);
+      }
+      ctx.strokeStyle = stroke;
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
+
+    line(contrib, 'rgba(121,255,215,0.85)', 'rgba(121,255,215,0.10)');
+    line(total, 'rgba(106,167,255,0.95)', 'rgba(106,167,255,0.12)');
+
+    ctx.strokeStyle = 'rgba(255,255,255,0.10)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(padL, padT, iw, ih);
+  }
+
+  function readInputs(){
+    const initial = Number(el.initial.value);
+    const monthly = Number(el.monthly.value);
+    const contribGrow = Number(el.contribGrow.value);
+    const years = Number(el.years.value);
+    const annualReturn = Number(el.returnRate.value);
+    const compoundsPerYear = Number(el.compound.value);
+    const inflation = Number(el.inflation.value);
+    const tax = Number(el.tax.value);
+
+    if(!isFinite(initial) || initial < 0) return {error:"Initial investment must be 0 or more."};
+    if(!isFinite(monthly) || monthly < 0) return {error:"Monthly contribution must be 0 or more."};
+    if(!isFinite(contribGrow) || contribGrow < 0) return {error:"Contribution growth must be 0 or more."};
+    if(!isFinite(years) || years < 1 || years > 50) return {error:"Years must be between 1 and 50."};
+    if(!isFinite(annualReturn) || annualReturn < -50 || annualReturn > 50) return {error:"Annual return looks unrealistic. Use -50% to 50%."};
+    if(!isFinite(inflation) || inflation < 0 || inflation > 20) return {error:"Inflation should be between 0% and 20%."};
+    if(!isFinite(tax) || tax < 0 || tax > 60) return {error:"Tax should be between 0% and 60%."};
+
+    return { initial, monthly, contribGrow, years, annualReturn, compoundsPerYear, inflation, tax };
+  }
+
+  function render(res, params){
+    el.kpiFinal.textContent = fmtMoney(res.afterTax);
+    el.kpiInvested.textContent = fmtMoney(res.contributed);
+    el.kpiInterest.textContent = fmtMoney(Math.max(0, res.beforeTax - res.contributed));
+    el.kpiReal.textContent = fmtMoney(res.real);
+
+    const now = new Date();
+    el.stamp.textContent = now.toLocaleString(undefined,{dateStyle:'medium', timeStyle:'short'});
+    el.chartNote.textContent = `${params.years} years • ${fmtPct(params.annualReturn)} return • ${params.compoundsPerYear===12?'monthly':params.compoundsPerYear===4?'quarterly':'annual'} compounding`;
+
+    el.tbody.innerHTML = '';
+    const frag = document.createDocumentFragment();
+    res.yearly.forEach(row=>{
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${row.year}</td>
+        <td class="right">${fmtMoney(row.endBalance)}</td>
+        <td class="right">${fmtMoney(row.contributed)}</td>
+        <td class="right">${fmtMoney(row.interestEarned)}</td>
+      `;
+      frag.appendChild(tr);
+    });
+    el.tbody.appendChild(frag);
+
+    drawChart(el.chart, res.seriesTotal, res.seriesContrib);
+
+    window.__lastRun = {params, res};
+  }
+
+  function calculate(){
+    showWarn('');
+    const params = readInputs();
+    if(params.error){ showWarn(params.error); return; }
+    const res = simulate(params);
+    render(res, params);
+  }
+
+  function reset(){
+    el.initial.value = 5000;
+    el.monthly.value = 300;
+    el.contribGrow.value = 2.0;
+    el.years.value = 20;
+    el.returnRate.value = 7.0;
+    el.compound.value = 12;
+    el.inflation.value = 2.5;
+    el.tax.value = 15.0;
+    calculate();
+  }
+
+  function exportCSV(){
+    if(!window.__lastRun) calculate();
+    const r = window.__lastRun.res;
+    const rows = [['Year','EndBalance','TotalContributed','InterestEarned']]
+      .concat(r.yearly.map(y=>[y.year, Math.round(y.endBalance), Math.round(y.contributed), Math.round(y.interestEarned)]));
+    const csv = rows.map(a=>a.join(',')).join('\n');
+    const blob = new Blob([csv], {type:'text/csv;charset=utf-8'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'investment_yearly_breakdown.csv';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  el.calcBtn.addEventListener('click', calculate);
+  el.resetBtn.addEventListener('click', reset);
+  el.exportBtn.addEventListener('click', exportCSV);
+
+  ['initial','monthly','contribGrow','years','returnRate','inflation','tax'].forEach(id=>{
+    $(id).addEventListener('keydown', (e)=>{ if(e.key==='Enter') calculate(); });
+  });
+  el.compound.addEventListener('change', calculate);
+
+  calculate();
+})();
+</script>
+</body>
+</html>
