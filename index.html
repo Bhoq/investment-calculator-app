@@ -3,20 +3,17 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Investment Calculator</title>
+  <title>Bushra Hoq — Investment Calculator</title>
   <style>
     :root{
       --bg:#0b1220;
-      --panel:#111a2e;
-      --panel2:#0f1729;
-      --card:#0f1930;
       --text:#e9eefc;
       --muted:#a9b3cf;
       --border:rgba(255,255,255,.10);
       --border2:rgba(255,255,255,.14);
       --accent:#6aa7ff;
       --accent2:#79ffd7;
-      --danger:#ff6a6a;
+      --orange:#ff7a00;
       --shadow: 0 18px 60px rgba(0,0,0,.35);
       --r:16px;
       --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
@@ -37,13 +34,12 @@
     }
     .wrap{max-width:1180px;margin:0 auto}
     header{
-      display:flex;gap:14px;align-items:center;justify-content:space-between;
+      display:flex;gap:14px;align-items:flex-start;justify-content:space-between;
       margin-bottom:18px;
     }
-    .title{
-      display:flex;flex-direction:column;gap:2px;
-    }
-    h1{margin:0;font-size:20px;letter-spacing:.2px}
+    .title{display:flex;flex-direction:column;gap:4px}
+    .name{margin:0;font-size:20px;letter-spacing:.2px;color:var(--orange);font-weight:900}
+    .app{margin:0;font-size:18px;font-weight:800}
     .sub{margin:0;color:var(--muted);font-size:13px;line-height:1.35}
     .badge{
       padding:6px 10px;border-radius:999px;
@@ -53,16 +49,19 @@
       font-size:12px;
       display:flex;gap:8px;align-items:center;
       white-space:nowrap;
+      margin-top:2px;
+    }
+    .dot{
+      width:8px;height:8px;border-radius:99px;background:var(--accent);
+      box-shadow:0 0 0 4px rgba(106,167,255,.14);
     }
     .grid{
       display:grid;
-      grid-template-columns: 420px 1fr;
+      grid-template-columns: 440px 1fr;
       gap:18px;
       align-items:start;
     }
-    @media (max-width: 980px){
-      .grid{grid-template-columns:1fr}
-    }
+    @media (max-width: 980px){ .grid{grid-template-columns:1fr} }
 
     .panel{
       background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
@@ -77,18 +76,12 @@
       border-bottom:1px solid var(--border);
       background:rgba(255,255,255,.02);
     }
-    .panel .hd .k{
-      display:flex;flex-direction:column;gap:2px;
-    }
+    .panel .hd .k{display:flex;flex-direction:column;gap:2px}
     .panel .hd .k .t{font-size:14px;font-weight:650}
     .panel .hd .k .d{font-size:12px;color:var(--muted)}
     .panel .bd{padding:14px}
 
-    .form{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:12px;
-    }
+    .form{display:grid;grid-template-columns: 1fr 1fr;gap:12px}
     .field{display:flex;flex-direction:column;gap:6px}
     .field.full{grid-column:1 / -1}
     label{font-size:12px;color:var(--muted)}
@@ -107,15 +100,8 @@
       border-color:rgba(106,167,255,.65);
       box-shadow:0 0 0 4px rgba(106,167,255,.16);
     }
-    input:active{transform:translateY(0.5px)}
-    .hint{
-      font-size:11px;color:rgba(169,179,207,.85);
-      line-height:1.35;
-    }
-    .actions{
-      display:flex;gap:10px;flex-wrap:wrap;align-items:center;
-      margin-top:12px;
-    }
+    .hint{font-size:11px;color:rgba(169,179,207,.85);line-height:1.35}
+    .actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
     .btn{
       cursor:pointer;
       border-radius:12px;
@@ -125,7 +111,7 @@
       font-size:13px;
       color:var(--text);
       background:rgba(255,255,255,.04);
-      transition: transform .05s ease, box-shadow .15s ease, border-color .15s ease, background .15s ease;
+      transition: transform .05s ease, border-color .15s ease, background .15s ease;
       user-select:none;
     }
     .btn.primary{
@@ -140,19 +126,18 @@
       font-size:11px;color:var(--muted);
       display:flex;gap:8px;align-items:center;
     }
-    .dot{
-      width:8px;height:8px;border-radius:99px;background:var(--accent);
-      box-shadow:0 0 0 4px rgba(106,167,255,.14);
+    .pill{
+      font-family:var(--mono);
+      padding:2px 6px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.03);
+      color:rgba(233,238,252,.9);
+      font-size:11px;
     }
 
-    .kpis{
-      display:grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap:12px;
-    }
-    @media (max-width: 980px){
-      .kpis{grid-template-columns: repeat(2, 1fr)}
-    }
+    .kpis{display:grid;grid-template-columns: repeat(4, 1fr);gap:12px}
+    @media (max-width: 980px){ .kpis{grid-template-columns: repeat(2, 1fr)} }
     .kpi{
       padding:12px;
       border-radius:14px;
@@ -162,7 +147,7 @@
     .kpi .l{font-size:11px;color:var(--muted)}
     .kpi .v{margin-top:6px;font-size:17px;font-weight:750;letter-spacing:.2px}
     .kpi .s{margin-top:4px;font-size:11px;color:rgba(169,179,207,.9)}
-    .kpi .mono{font-family:var(--mono)}
+
     .chartWrap{
       margin-top:12px;
       padding:12px;
@@ -170,14 +155,13 @@
       border:1px solid var(--border);
       background:rgba(255,255,255,.02);
     }
-    .chartTop{
-      display:flex;gap:10px;align-items:center;justify-content:space-between;margin-bottom:10px;
-    }
+    .chartTop{display:flex;gap:10px;align-items:center;justify-content:space-between;margin-bottom:10px}
     .legend{display:flex;gap:10px;align-items:center;color:var(--muted);font-size:12px}
     .key{display:flex;gap:6px;align-items:center}
     .sw{width:10px;height:10px;border-radius:3px;background:var(--accent)}
     .sw.b{background:var(--accent2)}
     canvas{width:100%;height:250px;display:block}
+
     .tableWrap{
       margin-top:12px;
       border-radius:14px;
@@ -185,11 +169,7 @@
       overflow:hidden;
       background:rgba(255,255,255,.02);
     }
-    table{
-      width:100%;
-      border-collapse:collapse;
-      font-size:12px;
-    }
+    table{width:100%;border-collapse:collapse;font-size:12px}
     thead th{
       text-align:left;
       padding:10px 10px;
@@ -217,53 +197,57 @@
       font-size:12px;
       display:none;
     }
-    .footerHelp{
-      margin-top:10px;
-      color:rgba(169,179,207,.85);
-      font-size:11px;
-      line-height:1.35;
-    }
-    .pill{
-      font-family:var(--mono);
-      padding:2px 6px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.12);
-      background:rgba(255,255,255,.03);
-      color:rgba(233,238,252,.9);
-      font-size:11px;
+    .footerHelp{margin-top:10px;color:rgba(169,179,207,.85);font-size:11px;line-height:1.35}
+
+    /* PDF export = print */
+    @media print{
+      body{background:#fff !important; color:#000 !important; padding:14px}
+      .badge, .actions, .note {display:none !important}
+      .panel{box-shadow:none !important; border:1px solid #ccc !important; background:#fff !important}
+      .sub, .small, label, .hint, .kpi .l, .kpi .s, .legend {color:#333 !important}
+      .name{color:#ff7a00 !important}
+      input, select {border:1px solid #ccc !important; background:#fff !important; color:#000 !important}
+      canvas {display:none !important}
+      .chartWrap::after{
+        content:"(Chart hidden in print/PDF to keep export clean)";
+        display:block; color:#555; font-size:12px; padding:10px 0 0 0;
+      }
     }
   </style>
 </head>
+
 <body>
   <div class="wrap">
     <header>
       <div class="title">
-        <h1>Investment Calculator</h1>
-        <p class="sub">Compound growth with contributions, contribution growth, inflation, and tax on gains.</p>
+        <h1 class="name">Bushra Hoq</h1>
+        <h2 class="app">Investment Calculator</h2>
+        <p class="sub">Compound growth + contributions + inflation + taxes + target planning. Runs 100% locally in your browser.</p>
       </div>
-      <div class="badge" title="Everything runs locally in your browser. No uploads. No tracking.">
+      <div class="badge" title="No uploads. No tracking. Works offline.">
         <span class="dot"></span>
         <span>Standalone • Offline-ready</span>
       </div>
     </header>
 
     <div class="grid">
-      <!-- LEFT: INPUTS -->
+      <!-- INPUTS -->
       <section class="panel">
         <div class="hd">
           <div class="k">
             <div class="t">Inputs</div>
             <div class="d">Tune assumptions, then click “Calculate”.</div>
           </div>
-          <div class="small">Defaults are conservative</div>
+          <div class="small">Shareable single file</div>
         </div>
         <div class="bd">
-          <div class="form" id="form">
+          <div class="form">
             <div class="field">
               <label for="initial">Initial investment ($)</label>
               <input id="initial" type="number" min="0" step="100" value="5000" />
               <div class="hint">One-time starting amount.</div>
             </div>
+
             <div class="field">
               <label for="monthly">Monthly contribution ($)</label>
               <input id="monthly" type="number" min="0" step="25" value="300" />
@@ -275,10 +259,11 @@
               <input id="contribGrow" type="number" min="0" step="0.1" value="2.0" />
               <div class="hint">Auto-increase contributions yearly.</div>
             </div>
+
             <div class="field">
               <label for="years">Time horizon (years)</label>
-              <input id="years" type="number" min="1" max="50" step="1" value="20" />
-              <div class="hint">1–50 years.</div>
+              <input id="years" type="number" min="1" max="60" step="1" value="20" />
+              <div class="hint">1–60 years.</div>
             </div>
 
             <div class="field">
@@ -286,6 +271,7 @@
               <input id="returnRate" type="number" step="0.1" value="7.0" />
               <div class="hint">Nominal (before inflation).</div>
             </div>
+
             <div class="field">
               <label for="compound">Compounding</label>
               <select id="compound">
@@ -299,8 +285,9 @@
             <div class="field">
               <label for="inflation">Inflation (% / yr)</label>
               <input id="inflation" type="number" step="0.1" value="2.5" />
-              <div class="hint">Used for real value estimate.</div>
+              <div class="hint">Used for real (today’s $) estimate.</div>
             </div>
+
             <div class="field">
               <label for="tax">Tax on gains (%)</label>
               <input id="tax" type="number" min="0" max="60" step="0.1" value="15.0" />
@@ -308,30 +295,38 @@
             </div>
 
             <div class="field full">
+              <label for="target">Target amount ($)</label>
+              <input id="target" type="number" min="0" step="1000" placeholder="e.g. 1000000" />
+              <div class="hint">Optional: see when you reach it + required monthly contribution.</div>
+            </div>
+
+            <div class="field full">
               <div class="actions">
                 <button class="btn primary" id="calcBtn" type="button">Calculate</button>
                 <button class="btn" id="resetBtn" type="button">Reset</button>
-                <button class="btn" id="exportBtn" type="button">Export table (CSV)</button>
+                <button class="btn" id="excelBtn" type="button">Export to Excel</button>
+                <button class="btn" id="pdfBtn" type="button">Export to PDF</button>
                 <div class="note"><span class="pill">Tip</span> Try 30 yrs + 8% return</div>
               </div>
               <div class="warn" id="warn"></div>
               <div class="footerHelp">
-                This tool uses a month-by-month simulation. Taxes are applied once at the end on <span class="pill">max(0, final - total contributed)</span>.
+                Month-by-month simulation. Taxes applied once at the end on <span class="pill">max(0, final − total contributed)</span>.
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- RIGHT: OUTPUTS -->
+      <!-- OUTPUTS -->
       <section class="panel">
         <div class="hd">
           <div class="k">
             <div class="t">Outputs</div>
-            <div class="d">At-a-glance metrics, growth chart, and yearly breakdown.</div>
+            <div class="d">KPIs, growth chart, yearly breakdown, and target planning.</div>
           </div>
           <div class="small" id="stamp">—</div>
         </div>
+
         <div class="bd">
           <div class="kpis">
             <div class="kpi">
@@ -356,6 +351,29 @@
             </div>
           </div>
 
+          <div class="kpis" style="margin-top:12px">
+            <div class="kpi">
+              <div class="l">Target status</div>
+              <div class="v" id="kpiTargetStatus">—</div>
+              <div class="s">Based on your target amount</div>
+            </div>
+            <div class="kpi">
+              <div class="l">Time to target</div>
+              <div class="v" id="kpiTargetTime">—</div>
+              <div class="s">If reachable within horizon</div>
+            </div>
+            <div class="kpi">
+              <div class="l">Required monthly (to hit target)</div>
+              <div class="v" id="kpiReqMonthly">—</div>
+              <div class="s">Solves for monthly contribution</div>
+            </div>
+            <div class="kpi">
+              <div class="l">Notes</div>
+              <div class="v" style="font-size:14px;font-weight:700" id="kpiNotes">—</div>
+              <div class="s">Helpful interpretation</div>
+            </div>
+          </div>
+
           <div class="chartWrap">
             <div class="chartTop">
               <div class="legend">
@@ -368,7 +386,7 @@
           </div>
 
           <div class="tableWrap" style="max-height:340px; overflow:auto;">
-            <table id="table">
+            <table>
               <thead>
                 <tr>
                   <th>Year</th>
@@ -388,33 +406,21 @@
 <script>
 (function(){
   const $ = (id)=>document.getElementById(id);
-
   const el = {
-    initial:$('initial'),
-    monthly:$('monthly'),
-    contribGrow:$('contribGrow'),
-    years:$('years'),
-    returnRate:$('returnRate'),
-    compound:$('compound'),
-    inflation:$('inflation'),
-    tax:$('tax'),
-    calcBtn:$('calcBtn'),
-    resetBtn:$('resetBtn'),
-    exportBtn:$('exportBtn'),
-    warn:$('warn'),
-    stamp:$('stamp'),
-    chart:$('chart'),
-    chartNote:$('chartNote'),
-    kpiFinal:$('kpiFinal'),
-    kpiInvested:$('kpiInvested'),
-    kpiInterest:$('kpiInterest'),
-    kpiReal:$('kpiReal'),
+    initial:$('initial'), monthly:$('monthly'), contribGrow:$('contribGrow'), years:$('years'),
+    returnRate:$('returnRate'), compound:$('compound'), inflation:$('inflation'), tax:$('tax'),
+    target:$('target'),
+    calcBtn:$('calcBtn'), resetBtn:$('resetBtn'), excelBtn:$('excelBtn'), pdfBtn:$('pdfBtn'),
+    warn:$('warn'), stamp:$('stamp'), chart:$('chart'), chartNote:$('chartNote'),
+    kpiFinal:$('kpiFinal'), kpiInvested:$('kpiInvested'), kpiInterest:$('kpiInterest'), kpiReal:$('kpiReal'),
+    kpiTargetStatus:$('kpiTargetStatus'), kpiTargetTime:$('kpiTargetTime'),
+    kpiReqMonthly:$('kpiReqMonthly'), kpiNotes:$('kpiNotes'),
     tbody:$('tbody')
   };
 
-  function fmtMoney(n){
+  function fmtMoney(n, digits=0){
     if(!isFinite(n)) return '—';
-    return n.toLocaleString(undefined,{style:'currency',currency:'USD',maximumFractionDigits:0});
+    return n.toLocaleString(undefined,{style:'currency',currency:'USD',maximumFractionDigits:digits});
   }
   function fmtPct(n){ return (n).toFixed(2) + '%'; }
 
@@ -423,30 +429,32 @@
     el.warn.textContent = msg || '';
   }
 
-  // --- Core simulation (month-by-month) ---
-  function simulate(params){
-    const months = params.years * 12;
-    const rAnnual = params.annualReturn / 100;
-    const inflAnnual = params.inflation / 100;
-    const contribGrowAnnual = params.contribGrow / 100;
+  // --- Simulation (month-by-month) ---
+  function simulate(p){
+    const months = p.years * 12;
+    const rAnnual = p.annualReturn / 100;
+    const inflAnnual = p.inflation / 100;
+    const growAnnual = p.contribGrow / 100;
 
-    const cpy = params.compoundsPerYear;
+    const cpy = p.compoundsPerYear;
     const pRate = Math.pow(1 + rAnnual, 1 / cpy) - 1;
     const monthsPerPeriod = 12 / cpy;
 
-    let balance = params.initial;
-    let contributed = params.initial;
+    let balance = p.initial;
+    let contributed = p.initial;
 
-    let seriesTotal = [];
-    let seriesContrib = [];
+    const seriesTotal = [];
+    const seriesContrib = [];
+    const yearly = [];
 
-    let yearly = [];
-    let monthlyContribution = params.monthly;
+    let monthlyContribution = p.monthly;
 
     for(let m=1; m<=months; m++){
+      // contribution at start of month
       balance += monthlyContribution;
       contributed += monthlyContribution;
 
+      // interest at end of compounding period
       if(m % monthsPerPeriod === 0){
         balance *= (1 + pRate);
       }
@@ -458,20 +466,60 @@
         const year = m/12;
         const interestEarned = Math.max(0, balance - contributed);
         yearly.push({ year, endBalance: balance, contributed, interestEarned });
-
-        monthlyContribution *= (1 + contribGrowAnnual);
+        monthlyContribution *= (1 + growAnnual);
       }
     }
 
     const gains = Math.max(0, balance - contributed);
-    const taxPaid = gains * (params.tax / 100);
+    const taxPaid = gains * (p.tax / 100);
     const afterTax = balance - taxPaid;
-    const real = afterTax / Math.pow(1 + inflAnnual, params.years);
+    const real = afterTax / Math.pow(1 + inflAnnual, p.years);
 
-    return { afterTax, beforeTax: balance, contributed, gains, taxPaid, real, yearly, seriesTotal, seriesContrib };
+    // when do we reach target (based on after-tax at that month? taxes are end-only, so use pre-tax path)
+    let targetMonth = null;
+    if(p.target && p.target > 0){
+      for(let i=0; i<seriesTotal.length; i++){
+        if(seriesTotal[i] >= p.target){ targetMonth = i+1; break; }
+      }
+    }
+
+    return { afterTax, beforeTax: balance, contributed, gains, taxPaid, real, yearly, seriesTotal, seriesContrib, targetMonth };
   }
 
-  // --- Canvas chart (no external libs) ---
+  // --- Solver: required monthly contribution to hit target within horizon ---
+  // Uses binary search over monthly amount, keeping contribution growth as configured.
+  function requiredMonthlyToHitTarget(baseParams){
+    if(!(baseParams.target > 0)) return null;
+
+    // If already hit with $0 monthly, return 0
+    const p0 = {...baseParams, monthly: 0};
+    if(simulate(p0).beforeTax >= baseParams.target) return 0;
+
+    // Upper bound search
+    let lo = 0;
+    let hi = Math.max(50, baseParams.monthly || 300);
+    let tries = 0;
+
+    while(tries < 30){
+      const test = simulate({...baseParams, monthly: hi});
+      if(test.beforeTax >= baseParams.target) break;
+      hi *= 2;
+      if(hi > 1_000_000) return null; // unrealistic / unreachable
+      tries++;
+    }
+
+    // Binary search
+    for(let i=0; i<40; i++){
+      const mid = (lo + hi) / 2;
+      const test = simulate({...baseParams, monthly: mid});
+      if(test.beforeTax >= baseParams.target) hi = mid;
+      else lo = mid;
+    }
+
+    return hi;
+  }
+
+  // --- Simple Canvas chart (no external libs) ---
   function formatCompact(v){
     if(!isFinite(v)) return '—';
     const abs = Math.abs(v);
@@ -484,7 +532,6 @@
   function drawChart(canvas, total, contrib){
     const ctx = canvas.getContext('2d');
     const W = canvas.width, H = canvas.height;
-
     ctx.clearRect(0,0,W,H);
 
     const padL=54, padR=16, padT=16, padB=32;
@@ -493,6 +540,7 @@
 
     const maxY = Math.max(...total, ...contrib, 1);
     const n = total.length;
+    if(n < 2) return;
 
     const x = (i)=> padL + (i/(n-1))*iw;
     const y = (v)=> padT + (1 - (v/maxY))*ih;
@@ -503,59 +551,47 @@
     const gridLines = 4;
     for(let g=0; g<=gridLines; g++){
       const yy = padT + (g/gridLines)*ih;
-      ctx.beginPath();
-      ctx.moveTo(padL, yy);
-      ctx.lineTo(padL+iw, yy);
-      ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(padL, yy); ctx.lineTo(padL+iw, yy); ctx.stroke();
     }
 
     // y labels
     ctx.fillStyle = 'rgba(169,179,207,0.9)';
     ctx.font = '12px ui-monospace, Menlo, Consolas, monospace';
-    ctx.textAlign='right';
-    ctx.textBaseline='middle';
+    ctx.textAlign='right'; ctx.textBaseline='middle';
     for(let g=0; g<=gridLines; g++){
       const yy = padT + (g/gridLines)*ih;
       const val = (1 - g/gridLines)*maxY;
       ctx.fillText(formatCompact(val), padL-10, yy);
     }
 
-    // x labels (years)
-    ctx.textAlign='center';
-    ctx.textBaseline='top';
+    // x labels
+    ctx.textAlign='center'; ctx.textBaseline='top';
     ctx.font = '11px ui-monospace, Menlo, Consolas, monospace';
     for(let m=0; m<n; m+=12){
       ctx.fillText('Y' + (Math.floor(m/12)+1), x(m), padT+ih+8);
     }
 
-    function line(series, stroke, fill){
-      // fill
+    function areaLine(series, stroke, fill){
       ctx.beginPath();
       for(let i=0;i<n;i++){
         const xx=x(i), yy=y(series[i]);
-        if(i===0) ctx.moveTo(xx,yy);
-        else ctx.lineTo(xx,yy);
+        if(i===0) ctx.moveTo(xx,yy); else ctx.lineTo(xx,yy);
       }
       ctx.lineTo(padL+iw, padT+ih);
       ctx.lineTo(padL, padT+ih);
       ctx.closePath();
-      ctx.fillStyle = fill;
-      ctx.fill();
+      ctx.fillStyle = fill; ctx.fill();
 
-      // stroke
       ctx.beginPath();
       for(let i=0;i<n;i++){
         const xx=x(i), yy=y(series[i]);
-        if(i===0) ctx.moveTo(xx,yy);
-        else ctx.lineTo(xx,yy);
+        if(i===0) ctx.moveTo(xx,yy); else ctx.lineTo(xx,yy);
       }
-      ctx.strokeStyle = stroke;
-      ctx.lineWidth = 2;
-      ctx.stroke();
+      ctx.strokeStyle = stroke; ctx.lineWidth = 2; ctx.stroke();
     }
 
-    line(contrib, 'rgba(121,255,215,0.85)', 'rgba(121,255,215,0.10)');
-    line(total, 'rgba(106,167,255,0.95)', 'rgba(106,167,255,0.12)');
+    areaLine(contrib, 'rgba(121,255,215,0.85)', 'rgba(121,255,215,0.10)');
+    areaLine(total,  'rgba(106,167,255,0.95)', 'rgba(106,167,255,0.12)');
 
     ctx.strokeStyle = 'rgba(255,255,255,0.10)';
     ctx.lineWidth = 1;
@@ -571,28 +607,32 @@
     const compoundsPerYear = Number(el.compound.value);
     const inflation = Number(el.inflation.value);
     const tax = Number(el.tax.value);
+    const target = Number(el.target.value);
 
     if(!isFinite(initial) || initial < 0) return {error:"Initial investment must be 0 or more."};
     if(!isFinite(monthly) || monthly < 0) return {error:"Monthly contribution must be 0 or more."};
     if(!isFinite(contribGrow) || contribGrow < 0) return {error:"Contribution growth must be 0 or more."};
-    if(!isFinite(years) || years < 1 || years > 50) return {error:"Years must be between 1 and 50."};
+    if(!isFinite(years) || years < 1 || years > 60) return {error:"Years must be between 1 and 60."};
     if(!isFinite(annualReturn) || annualReturn < -50 || annualReturn > 50) return {error:"Annual return looks unrealistic. Use -50% to 50%."};
     if(!isFinite(inflation) || inflation < 0 || inflation > 20) return {error:"Inflation should be between 0% and 20%."};
     if(!isFinite(tax) || tax < 0 || tax > 60) return {error:"Tax should be between 0% and 60%."};
-
-    return { initial, monthly, contribGrow, years, annualReturn, compoundsPerYear, inflation, tax };
+    if(!isFinite(target) || target < 0) return {error:"Target must be 0 or more (or leave blank)."};
+    return { initial, monthly, contribGrow, years, annualReturn, compoundsPerYear, inflation, tax, target };
   }
 
-  function render(res, params){
+  function render(res, p){
+    // KPIs
     el.kpiFinal.textContent = fmtMoney(res.afterTax);
     el.kpiInvested.textContent = fmtMoney(res.contributed);
     el.kpiInterest.textContent = fmtMoney(Math.max(0, res.beforeTax - res.contributed));
     el.kpiReal.textContent = fmtMoney(res.real);
 
+    // stamps
     const now = new Date();
     el.stamp.textContent = now.toLocaleString(undefined,{dateStyle:'medium', timeStyle:'short'});
-    el.chartNote.textContent = `${params.years} years • ${fmtPct(params.annualReturn)} return • ${params.compoundsPerYear===12?'monthly':params.compoundsPerYear===4?'quarterly':'annual'} compounding`;
+    el.chartNote.textContent = `${p.years} years • ${fmtPct(p.annualReturn)} return • ${p.compoundsPerYear===12?'monthly':p.compoundsPerYear===4?'quarterly':'annual'} compounding`;
 
+    // Table
     el.tbody.innerHTML = '';
     const frag = document.createDocumentFragment();
     res.yearly.forEach(row=>{
@@ -607,17 +647,51 @@
     });
     el.tbody.appendChild(frag);
 
+    // Chart
     drawChart(el.chart, res.seriesTotal, res.seriesContrib);
 
-    window.__lastRun = {params, res};
+    // Target & solver
+    if(p.target && p.target > 0){
+      const finalPreTax = res.beforeTax;
+      const hit = finalPreTax >= p.target;
+
+      el.kpiTargetStatus.textContent = hit ? "On track ✅" : "Not reached ❌";
+      if(res.targetMonth){
+        const y = (res.targetMonth/12);
+        el.kpiTargetTime.textContent = `${y.toFixed(1)} yrs`;
+      } else {
+        el.kpiTargetTime.textContent = "—";
+      }
+
+      const reqMonthly = requiredMonthlyToHitTarget(p);
+      if(reqMonthly === null){
+        el.kpiReqMonthly.textContent = "—";
+        el.kpiNotes.textContent = "Target may be unrealistic with current return/timeline.";
+      } else {
+        el.kpiReqMonthly.textContent = fmtMoney(reqMonthly, 0);
+        if(hit){
+          el.kpiNotes.textContent = "You already reach the target with current inputs.";
+        } else {
+          el.kpiNotes.textContent = "Increase monthly contribution or extend timeline.";
+        }
+      }
+    } else {
+      el.kpiTargetStatus.textContent = "Add a target";
+      el.kpiTargetTime.textContent = "—";
+      el.kpiReqMonthly.textContent = "—";
+      el.kpiNotes.textContent = "Enter a target amount to unlock goal planning.";
+    }
+
+    // Store for export
+    window.__lastRun = {p, res};
   }
 
   function calculate(){
     showWarn('');
-    const params = readInputs();
-    if(params.error){ showWarn(params.error); return; }
-    const res = simulate(params);
-    render(res, params);
+    const p = readInputs();
+    if(p.error){ showWarn(p.error); return; }
+    const res = simulate(p);
+    render(res, p);
   }
 
   function reset(){
@@ -629,35 +703,69 @@
     el.compound.value = 12;
     el.inflation.value = 2.5;
     el.tax.value = 15.0;
+    el.target.value = '';
     calculate();
   }
 
-  function exportCSV(){
+  // Export to Excel (CSV that opens in Excel)
+  function exportExcel(){
     if(!window.__lastRun) calculate();
     const r = window.__lastRun.res;
-    const rows = [['Year','EndBalance','TotalContributed','InterestEarned']]
-      .concat(r.yearly.map(y=>[y.year, Math.round(y.endBalance), Math.round(y.contributed), Math.round(y.interestEarned)]));
-    const csv = rows.map(a=>a.join(',')).join('\n');
+    const p = window.__lastRun.p;
+
+    const meta = [
+      ["Bushra Hoq — Investment Calculator Export"],
+      ["Generated", new Date().toLocaleString()],
+      ["Initial", p.initial],
+      ["Monthly", p.monthly],
+      ["Contribution Growth %/yr", p.contribGrow],
+      ["Years", p.years],
+      ["Annual Return %", p.annualReturn],
+      ["Compounding per year", p.compoundsPerYear],
+      ["Inflation %/yr", p.inflation],
+      ["Tax on gains %", p.tax],
+      ["Target", p.target || ""],
+      [],
+      ["Year","EndBalance","TotalContributed","InterestEarned"]
+    ];
+
+    const rows = meta.concat(
+      r.yearly.map(y=>[y.year, Math.round(y.endBalance), Math.round(y.contributed), Math.round(y.interestEarned)])
+    );
+
+    const csv = rows.map(a => a.map(x=>{
+      const s = String(x ?? "");
+      // quote if commas/newlines
+      return /[,\n"]/g.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s;
+    }).join(",")).join("\n");
+
     const blob = new Blob([csv], {type:'text/csv;charset=utf-8'});
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'investment_yearly_breakdown.csv';
+    a.download = 'investment_calculator_export.csv';
     document.body.appendChild(a);
     a.click();
     a.remove();
     URL.revokeObjectURL(url);
   }
 
+  // Export to PDF (print to PDF)
+  function exportPDF(){ window.print(); }
+
+  // Bind
   el.calcBtn.addEventListener('click', calculate);
   el.resetBtn.addEventListener('click', reset);
-  el.exportBtn.addEventListener('click', exportCSV);
+  el.excelBtn.addEventListener('click', exportExcel);
+  el.pdfBtn.addEventListener('click', exportPDF);
 
-  ['initial','monthly','contribGrow','years','returnRate','inflation','tax'].forEach(id=>{
-    $(id).addEventListener('keydown', (e)=>{ if(e.key==='Enter') calculate(); });
-  });
   el.compound.addEventListener('change', calculate);
+  ['initial','monthly','contribGrow','years','returnRate','inflation','tax','target'].forEach(id=>{
+    $(id).addEventListener('keydown', (e)=>{ if(e.key==='Enter') calculate(); });
+    $(id).addEventListener('change', ()=>calculate());
+  });
 
+  // initial run
   calculate();
 })();
 </script>
